@@ -8,28 +8,15 @@ The **Logs Analysis Project** is the third of several projects within the **Full
 * On which days did more than 1% of the requests lead to errors?
 
 This README assumes that you have already setup the **virtual machine** with **_VirtualBox_** and **_Vagrant_**, and you have configured the **VM** with the files provided by **_Udacity_**.
+
 ## Table of Contents
 ****
-* Installation
-  * Python2.7
-  * FTMT.zip
 * Usage
-  * IDLE (_Python GUI_)
-  * Run `entertainment_center.py`
-  * Edit `entertainment_center.py` (_Optional_)
+  * Views - manually or `prepare_views.py`
+  * Answers - `log_analyzer.py`
+  * Cleanup - manually or `cleanup_db.py`
 * Authors
 * Acknowledgments
-
-## Installation
-****
-#### Python 2.7
-In order to run this `code`, you will need to install **_Python 2.7.13_** on your machine.  You can download Python from the [**Official Website**](https://www.python.org/downloads/).
-
-* [Windows Installation Instructions](http://docs.python-guide.org/en/latest/starting/install/win/)
-* [Mac OSX Installation Instructions](http://docs.python-guide.org/en/latest/starting/install/osx/)
-
-#### FTMT.zip
-The fact that you're reading this README file means that you have already extracted the files in **_FTMT.zip_** with an extraction tool of your liking.  In order to view the **Fresh Tomatoes Movie Trailers** webpage, you will need to ensure the `media.py`, `entertainment_center.py`, and `fresh_tomatoes.py` files are contained in the same directory folder of your liking.
 
 ## Usage
 ****
