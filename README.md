@@ -138,7 +138,7 @@ python3 cleanup_db.py
 
 ## Authors
 
-* **Sean Magrann**
+* **Sean Magrann** - AT&T Services, Inc. | Emerging Technologies
 
 ## Acknowledgements
 
