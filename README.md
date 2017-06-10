@@ -12,12 +12,19 @@ This README assumes that you have already setup the **virtual machine** with **_
 
 ## Table of Contents
 
+* Setup
 * Usage
   * Views - manually or `prepare_views.py`
   * Answers - `log_analyzer.py`
   * Cleanup - manually or `cleanup_db.py`
 * Authors
 * Acknowledgments
+
+## Setup
+
+If you already have the **VM** installed and configured, place `prepare_views.py`, `log_analyzer.py`, and `cleanup_db.py` into the **vagrant** folder inside the **FSND-Virtual-Machine** directory.
+
+If you have not installed the **VM** yet, visit [Installing the Virtual Machine Lesson](https://classroom.udacity.com/nanodegrees/nd004/parts/8d3e23e1-9ab6-47eb-b4f3-d5dc7ef27bf0/modules/bc51d967-cb21-46f4-90ea-caf73439dc59/lessons/5475ecd6-cfdb-4418-85a2-f2583074c08d/concepts/14c72fe3-e3fe-4959-9c4b-467cf5b7c3a0) in the **Full Stack Web Developer Nanodegree**.
 
 ## Usage
 
