@@ -2,10 +2,10 @@
 import time
 import psycopg2
 
-DBNAME = "news"
+dbname = "news"
 
 # Connect to news database
-db = psycopg2.connect(database=DBNAME)
+db = psycopg2.connect(database=dbname)
 c = db.cursor()
 print()
 
