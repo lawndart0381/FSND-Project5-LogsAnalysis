@@ -8,8 +8,6 @@ DBNAME = "news"
 db = psycopg2.connect(database=DBNAME)
 c = db.cursor()
 print()
-print("Running queries, please wit...")
-print()
 
 # Display the TOP 3 articles of all time sorted by most to least
 query = 'SELECT title, views '\
@@ -59,5 +57,3 @@ for row in errordays:
 print("-----------------------------------------------------")
 print()
 db.close()
-print("Finished analyzing logs. You can now run cleanup_db.py.")
-print()
