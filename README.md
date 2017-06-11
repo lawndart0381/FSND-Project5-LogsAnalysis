@@ -1,93 +1,150 @@
 # README - Udacity Project: Logs Analysis Project
-****
+
 
 
 The **Logs Analysis Project** is the third of several projects within the **Full Stack Web Developer Nanodegree** offered by **_Udacity_**.  This project is to simulate an **internal reporting tool** that will query information from the **news** database to answer three questions:
+
 * What are the most popular three articles of all time?
 * Who are the most popular authors of all time?
 * On which days did more than 1% of the requests lead to errors?
 
 This README assumes that you have already setup the **virtual machine** with **_VirtualBox_** and **_Vagrant_**, and you have configured the **VM** with the files provided by **_Udacity_**.
+
 ## Table of Contents
-****
-* Installation
-  * Python2.7
-  * FTMT.zip
+
+* Setup
 * Usage
-  * IDLE (_Python GUI_)
-  * Run `entertainment_center.py`
-  * Edit `entertainment_center.py` (_Optional_)
+  * Views - manually or `prepare_views.py`
+  * Answers - `log_analyzer.py`
+  * Cleanup - manually or `cleanup_db.py`
 * Authors
 * Acknowledgments
 
-## Installation
-****
-#### Python 2.7
-In order to run this `code`, you will need to install **_Python 2.7.13_** on your machine.  You can download Python from the [**Official Website**](https://www.python.org/downloads/).
+## Setup
 
-* [Windows Installation Instructions](http://docs.python-guide.org/en/latest/starting/install/win/)
-* [Mac OSX Installation Instructions](http://docs.python-guide.org/en/latest/starting/install/osx/)
+If you already have the **VM** installed and configured, place `prepare_views.py`, `log_analyzer.py`, and `cleanup_db.py` into the **vagrant** folder inside the **FSND-Virtual-Machine** directory.
 
-#### FTMT.zip
-The fact that you're reading this README file means that you have already extracted the files in **_FTMT.zip_** with an extraction tool of your liking.  In order to view the **Fresh Tomatoes Movie Trailers** webpage, you will need to ensure the `media.py`, `entertainment_center.py`, and `fresh_tomatoes.py` files are contained in the same directory folder of your liking.
+If you have not installed the **VM** yet, visit [Installing the Virtual Machine Lesson](https://classroom.udacity.com/nanodegrees/nd004/parts/8d3e23e1-9ab6-47eb-b4f3-d5dc7ef27bf0/modules/bc51d967-cb21-46f4-90ea-caf73439dc59/lessons/5475ecd6-cfdb-4418-85a2-f2583074c08d/concepts/14c72fe3-e3fe-4959-9c4b-467cf5b7c3a0) in the **Full Stack Web Developer Nanodegree**.
 
 ## Usage
+
+**Views**
+
+I created six views in the database to help answer the questions.  You can either set them up manually or automatically with the instructions below:
+
+**_Manually_**
+
+1. Connect to the **_news_** database
+```
+psql news
+```
+2. Create a view copy of **_log_** table that can be updated to remove '/article/' from the rows in **_path_** column.
+```
+CREATE VIEW cleanlog AS SELECT path, ip, method, status, time, id FROM log;
+```
+3. Make the update to the **_path_** column in **_cleanlog_** view to remove '/article/' from the string. 
+```
+UPDATE cleanlog SET path = replace(path, '/article/', '');
+```
+4. Create a view named **_articles1_** that joins **_articles_** and **_authors_**.
+```
+CREATE VIEW articles1 AS SELECT name, title, slug FROM articles JOIN authors ON articles.author = authors.id;
+```
+5. Create a view named **_popular_** that counts successful views of articles from **_cleanlog_**.
+```
+CREATE VIEW popular AS SELECT COUNT(path) as views, path FROM cleanlog WHERE status LIKE '%200%' AND path != '/' GROUP BY path ORDER BY views DESC;
+```
+6. Create a view named **_notfound_** that counts errors per day from **_cleanlog_**.
+```
+CREATE VIEW notfound AS SELECT time::date as day, status, count(id) as errors FROM cleanlog WHERE status = '404 NOT FOUND' GROUP BY day, status ORDER BY day;
+```
+7. Create a view named **_hits_** that counts the total site hits per day from **_cleanlog_**.
+```
+CREATE VIEW hits AS SELECT time::date as day, count(id) as hits FROM cleanlog GROUP BY day ORDER BY day;
+```
+8. Create a view named **_error_days_** that gets a raw percentage of errors per day from **_notfound_** and **_hits_**.
+```
+CREATE VIEW error_days AS SELECT notfound.day, errors/hits::float*100 AS percent FROM notfound JOIN hits ON notfound.day = hits.day GROUP BY notfound.day, notfound.errors, hits.hits ORDER BY notfound.day;
+```
+9. You can now answer the questions.  Skip to **_Answers_** section below.
+
+**_Automatically_**
+
+1. Run the `prepare_views.py` file.
+```
+python3 prepare_views.py
+```
+2. That's all there was to that!
+
 ****
-The easiest way to run this program is through **IDLE**, which was installed during the **Python** installation.
-* [Windows IDLE Instructions](https://hkn.eecs.berkeley.edu/~dyoo/python/idle_intro/index.html)
-* [Mac IDLE Instructions](http://homepages.cwi.nl/~jack/macpython_help/ide/)
 
-### Running the `code`
-Once you have opened **IDLE**, select _File_ then _Open_.
-![alt text](https://dl.dropboxusercontent.com/u/29108866/MarkdownImages/IDLE_file_open.png)
+**Answers**
 
-Browse to the directory folder where `media.py`, `entertainment_center.py`, and `fresh_tomatoes.py` files are contained, and select `entertainment_center.py` to open the module.
-![alt text](https://dl.dropboxusercontent.com/u/29108866/MarkdownImages/IDLE_browse_to_file.png)
+1. Run the `log_analyzer.py` file.
+```
+python3 log_analyzer.py
+```
+2. These are the results that I get...
+```
+vagrant@vagrant:/vagrant$ python3 log_analyzer.py
 
-![alt text](https://dl.dropboxusercontent.com/u/29108866/MarkdownImages/entertainment_center.png)
+The top 3 articles of all time are...
 
-To run the module, select _Run_ and then _Run Module_.  Or you can simply hit _F5_.
-![alt text](https://dl.dropboxusercontent.com/u/29108866/MarkdownImages/run_module.png)
+* Candidate is jerk, alleges rival - 338647 views
+* Bears love berries, alleges bear - 253801 views
+* Bad things gone, say good people - 170098 views
+-----------------------------------------------------
 
-**Success!**  You are now viewing the webpage of _my favorite_ movie trailers!  You can click on the movie poster tiles to watch the **_YouTube_** trailers.
-**Warning!** Some of the movie trailers that are rated **R** may contain language that is offensive and/or not suitable for young children.
-![alt text](https://dl.dropboxusercontent.com/u/29108866/MarkdownImages/web_page.png)
-   
-### Editing the `code`
+The most popular authors of all time are...
 
-It is recommended that you have a working knowledge of _Object Oriented Programming_ **(Python)**.  There is no need to edit anything in `media.py` or `fresh_tomatoes.py`.
+* Ursula La Multa - 507594 views
+* Rudolf von Treppenwitz - 423457 views
+* Anonymous Contributor - 170098 views
+* Markoff Chaney - 84557 views
+-----------------------------------------------------
 
-To personalize the page with your own favorite movies, you will edit the data objects in `entertainment_center.py`.
-There are five elements that will need edited for each movie object:
-1. The object name (Ex. Movie = Toy Story, change `some_movie = media.Movie` to `toy_story = media.Movie`) 
-2. Movie Title
-3. A URL to your movie's poster image
-4. A URL to your movie's rating image
-5. A URL to your movie's trailer
+The following days experienced more than 1% errors...
 
-#### Example Code for Movie Objects
-```python
-# Movie data for Fresh Tomatoes Movie Trailers
-some_movie = media.Movie("Some Movie", # Your movie's title
-                        "http://someurl.com", # Link to your movie's poster image
-                        "http://someurl.com", # Link to your movie's rating image
-                        "http://someurl.com") # Link to your movie's trailer
+* 2016-07-17 - 2.3 %
+-----------------------------------------------------
+```
+****
+
+**Cleanup**
+
+To restore the **_news_** database on the **VM**, you will need to perform a couple of `DROP VIEW` queries.  Once again, you can manually do it or have it done automaically.
+
+**_Manually_**
+
+1. Drop the **_cleanlog_** and the other views that it cascades down to.
+```
+DROP VIEW cleanlog CASCADE;
+```
+2. Drop the **_articles1_** view.
+```
+DROP VIEW articles1;
+```
+3. Close the connection to the news database.
+```
+\q
 ```
 
-Once you have personalized your movie objects, you will need to edit the list of object names that will be opened in `fresh_tomatoes.py`.  The list is located near the bottom of `entertainment_center.py` below the comment `# List of movies for create_movie_tiles_content function in fresh_tomatoes`. 
-#### Example Code for Movie List
-```python
-# List of movies for create_movie_tiles_content function in fresh_tomatoes   
-movies = [some_movie, toy_story] # To create a list, use a comma between object name entries
+**_Automatically_**
+
+1. Run the `cleanup_db.py` file.
 ```
-Save your edits to `entertainment_center.py`, and hit _F5_ to see your new page!  Good Luck!
+python3 cleanup_db.py
+```
+2. That's all there was to that!
+
 ## Authors
-****
-* **Sean Magrann**
+
+* **Sean Magrann** - AT&T Services, Inc. | Emerging Technologies
 
 ## Acknowledgements
-****
-* [UDACITY](https://www.udacity.com/) - Programming Foundations with Python
+
+* [Udacity](https://www.udacity.com/) - Programming Foundations with Python
+* [Udacity](https://www.udacity.com/) - The Backend: Databases & Applications
 
 
 
