@@ -88,8 +88,6 @@ python3 log_analyzer.py
 ```
 vagrant@vagrant:/vagrant$ python3 log_analyzer.py
 
-Running queries, please wit...
-
 The top 3 articles of all time are...
 
 * Candidate is jerk, alleges rival - 338647 views
@@ -109,10 +107,6 @@ The following days experienced more than 1% errors...
 
 * 2016-07-17 - 2.3 %
 -----------------------------------------------------
-
-Finished analyzing logs. You can now run cleanup_db.py.
-
-vagrant@vagrant:/vagrant$ 
 ```
 ****
 
